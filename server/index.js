@@ -1,29 +1,30 @@
 const express = require('express')
 const app = express()
 const PORT = process.env.PORT || 5000
-
 const http = require('http').Server(app)
 const cors = require('cors')
 
-// Настройка CORS
 app.use(cors({
-    origin: ['https://guest-cw8g.vercel.app', 'http://localhost:5173'],
-    methods: ['GET', 'POST'],
-    credentials: true
+    origin: 'https://guest-cw8g.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
+// Handle preflight requests
+app.options('*', cors())
+
 const socketIO = require('socket.io')(http, {
+    pingTimeout: 60000,
     cors: {
-        origin: ['https://guest-cw8g.vercel.app', 'http://localhost:5173'],
+        origin: 'https://guest-cw8g.vercel.app',
         methods: ['GET', 'POST'],
-        credentials: true,
-        allowedHeaders: ['Content-Type', 'Authorization']
-    },
-    transports: ['websocket', 'polling']
+        credentials: true
+    }
 })
 
 app.get('/api', (req, res) => {
-    res.json( {
+    res.json({
         message: 'Hello'
     })
 })
@@ -32,6 +33,7 @@ const users = []
 
 socketIO.on('connection', (socket) => {
     console.log(`${socket.id} зашел`)
+    
     socket.on('message', (data) => {
         socketIO.emit('response', data)
     })
@@ -49,5 +51,5 @@ socketIO.on('connection', (socket) => {
 })
 
 http.listen(PORT, () => {
-    console.log(`Server start on http://localhost:${PORT}`)
+    console.log(`Server is running on port ${PORT}`)
 })
