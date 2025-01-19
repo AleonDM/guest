@@ -1,9 +1,12 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes } from 'react-router-dom'
 import socketIO from 'socket.io-client'
-import Home from "./components/home/home.jsx"
-import ChatPage from "./components/chat/index.jsx"
-const socket = socketIO.connect(import.meta.env.VITE_API_URL)
+import Home from './components/home/home'
+import ChatPage from './components/chat'
 
+const socket = socketIO.connect(import.meta.env.VITE_API_URL, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true
+})
 
 function App() {
   return (
