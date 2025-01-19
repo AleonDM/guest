@@ -6,7 +6,8 @@ const http = require('http').Server(app)
 const cors = require('cors')
 const socketIO = require('socket.io')(http, {
     cors: {
-        origin: 'http://localhost:5173'
+        origin: ['https://guest-cw8g.vercel.app', 'http://localhost:5173'],
+        methods: ["GET", "POST"]
     }
 })
 
