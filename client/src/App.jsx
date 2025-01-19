@@ -1,23 +1,28 @@
 import { Route, Routes } from 'react-router-dom'
-import socketIO from 'socket.io-client'
+import io from 'socket.io-client'
 import Home from './components/home/home'
 import ChatPage from './components/chat'
 
-const socket = socketIO(import.meta.env.VITE_API_URL, {
-  withCredentials: true,
+const socket = io(import.meta.env.VITE_API_URL, {
+  transports: ['polling', 'websocket'],
+  path: '/socket.io/',
   autoConnect: true,
   reconnection: true,
-  reconnectionAttempts: 5,
   reconnectionDelay: 1000,
-  transports: ['polling', 'websocket']
-})
-
-socket.on('connect_error', (error) => {
-  console.error('Connection error:', error)
+  reconnectionDelayMax: 5000,
+  reconnectionAttempts: 5
 })
 
 socket.on('connect', () => {
   console.log('Connected to server')
+})
+
+socket.on('connect_error', (error) => {
+  console.error('Connection error:', error.message)
+})
+
+socket.on('disconnect', (reason) => {
+  console.log('Disconnected:', reason)
 })
 
 function App() {

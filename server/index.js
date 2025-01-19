@@ -1,25 +1,34 @@
 const express = require('express')
 const app = express()
-const PORT = process.env.PORT || 5000
-const http = require('http').Server(app)
+const server = require('http').createServer(app)
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["*"],
+        credentials: false
+    },
+    transports: ['polling', 'websocket'],
+    allowEIO3: true,
+    path: '/socket.io/'
+})
+
 const cors = require('cors')
 
 app.use(cors({
-    origin: 'https://guest-cw8g.vercel.app',
+    origin: "*",
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['*']
 }))
 
-// Handle preflight requests
-app.options('*', cors())
-
-const socketIO = require('socket.io')(http, {
-    pingTimeout: 60000,
-    cors: {
-        origin: 'https://guest-cw8g.vercel.app',
-        methods: ['GET', 'POST'],
-        credentials: true
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    res.header('Access-Control-Allow-Headers', '*')
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200)
+    } else {
+        next()
     }
 })
 
@@ -31,18 +40,18 @@ app.get('/api', (req, res) => {
 
 const users = []
 
-socketIO.on('connection', (socket) => {
+io.on('connection', (socket) => {
     console.log(`${socket.id} зашел`)
     
     socket.on('message', (data) => {
-        socketIO.emit('response', data)
+        io.emit('response', data)
     })
 
     socket.on('typing', (data) => socket.broadcast.emit('responseTyping', data))
 
     socket.on('newUser', (data) => {
         users.push(data)
-        socketIO.emit('responseNewUser', users)
+        io.emit('responseNewUser', users)
     })
 
     socket.on('disconnect', () => {
@@ -50,6 +59,7 @@ socketIO.on('connection', (socket) => {
     })
 })
 
-http.listen(PORT, () => {
+const PORT = process.env.PORT || 5000
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 })
