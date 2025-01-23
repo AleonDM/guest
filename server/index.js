@@ -3,33 +3,27 @@ const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server, {
     cors: {
-        origin: "https://guest-cw8g.vercel.app",
+        origin: ["https://guest-cw8g.vercel.app", "http://localhost:5173"],
         methods: ["GET", "POST"],
         credentials: true
     },
-    transports: ['websocket', 'polling'],
-    allowEIO3: true,
-    secure: true
+    path: '/socket.io/',
+    transports: ['websocket', 'polling']
 })
 
 const cors = require('cors')
 
 app.use(cors({
-    origin: "https://guest-cw8g.vercel.app",
+    origin: ["https://guest-cw8g.vercel.app", "http://localhost:5173"],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
 }))
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://guest-cw8g.vercel.app')
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    res.header('Access-Control-Allow-Headers', '*')
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200)
-    } else {
-        next()
-    }
-})
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 app.get('/api', (req, res) => {
     res.json({

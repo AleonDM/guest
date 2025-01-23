@@ -4,14 +4,13 @@ import Home from './components/home/home'
 import ChatPage from './components/chat'
 
 const socket = io('https://guest-xi.vercel.app', {
-  transports: ['websocket'],
-  secure: true,
-  rejectUnauthorized: false,
+  transports: ['websocket', 'polling'],
   path: '/socket.io/',
   withCredentials: true,
   reconnection: true,
   reconnectionAttempts: 5,
-  reconnectionDelay: 1000
+  reconnectionDelay: 1000,
+  autoConnect: true
 })
 
 socket.on('connect', () => {
@@ -30,22 +29,31 @@ function App() {
   const [user, setUser] = useState(localStorage.getItem('user'))
 
   useEffect(() => {
-    socket.on('connect_error', (err) => {
-      console.log('Connection error:', err)
-    })
-
-    socket.on('connect', () => {
+    const handleConnect = () => {
       console.log('Connected to server')
-    })
+    }
 
-    socket.on('disconnect', () => {
+    const handleDisconnect = () => {
       console.log('Disconnected from server')
-    })
+    }
+
+    const handleError = (err) => {
+      console.log('Connection error:', err)
+      // Попробуем переподключиться через polling если websocket не работает
+      if (socket.io.opts.transports[0] === 'websocket') {
+        socket.io.opts.transports = ['polling', 'websocket']
+        socket.connect()
+      }
+    }
+
+    socket.on('connect', handleConnect)
+    socket.on('disconnect', handleDisconnect)
+    socket.on('connect_error', handleError)
 
     return () => {
-      socket.off('connect_error')
-      socket.off('connect')
-      socket.off('disconnect')
+      socket.off('connect', handleConnect)
+      socket.off('disconnect', handleDisconnect)
+      socket.off('connect_error', handleError)
     }
   }, [])
 
