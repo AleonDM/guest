@@ -3,22 +3,19 @@ const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server, {
     cors: {
-        origin: "*",
+        origin: "https://guest-cw8g.vercel.app",
         methods: ["GET", "POST"],
-        allowedHeaders: ["*"],
-        credentials: false
+        credentials: true
     },
-    transports: ['polling', 'websocket'],
-    allowEIO3: true,
-    path: '/socket.io/'
+    transports: ['websocket', 'polling']
 })
 
 const cors = require('cors')
 
 app.use(cors({
-    origin: "*",
+    origin: "https://guest-cw8g.vercel.app",
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['*']
+    credentials: true
 }))
 
 app.use((req, res, next) => {
@@ -30,6 +27,10 @@ app.use((req, res, next) => {
     } else {
         next()
     }
+})
+
+app.get('/', (req, res) => {
+    res.send('Server is running')
 })
 
 app.get('/api', (req, res) => {
@@ -59,7 +60,7 @@ io.on('connection', (socket) => {
     })
 })
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 })

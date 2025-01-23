@@ -9,16 +9,14 @@
   "routes": [
     {
       "src": "/socket.io/(.*)",
-      "dest": "/index.js",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-        "Access-Control-Allow-Headers": "*"
-      }
+      "dest": "index.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.js"
+      "dest": "index.js"
     }
-  ]
+  ],
+  "env": {
+    "PORT": "3000"
+  }
 }
