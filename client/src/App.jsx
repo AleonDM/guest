@@ -1,16 +1,17 @@
-import { Route, Routes } from 'react-router-dom'
-import io from 'socket.io-client'
+import { useState, useEffect } from 'react'
+import { io } from 'socket.io-client'
 import Home from './components/home/home'
 import ChatPage from './components/chat'
 
-const socket = io(import.meta.env.VITE_API_URL, {
-  transports: ['polling', 'websocket'],
+const socket = io('https://guest-xi.vercel.app', {
+  transports: ['websocket'],
+  secure: true,
+  rejectUnauthorized: false,
   path: '/socket.io/',
-  autoConnect: true,
+  withCredentials: true,
   reconnection: true,
-  reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
-  reconnectionAttempts: 5
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000
 })
 
 socket.on('connect', () => {
@@ -26,12 +27,29 @@ socket.on('disconnect', (reason) => {
 })
 
 function App() {
-  return (
-    <Routes>
-      <Route path='/' element={<Home socket={socket}/>} />
-      <Route path='/chat' element={<ChatPage socket={socket}/>} />
-    </Routes>
-  )
+  const [user, setUser] = useState(localStorage.getItem('user'))
+
+  useEffect(() => {
+    socket.on('connect_error', (err) => {
+      console.log('Connection error:', err)
+    })
+
+    socket.on('connect', () => {
+      console.log('Connected to server')
+    })
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server')
+    })
+
+    return () => {
+      socket.off('connect_error')
+      socket.off('connect')
+      socket.off('disconnect')
+    }
+  }, [])
+
+  return user ? <ChatPage socket={socket} /> : <Home socket={socket} setUser={setUser} />
 }
 
 export default App
