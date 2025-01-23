@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 import Home from './components/home/home'
 import ChatPage from './components/chat'
 
-const socket = io('http://localhost:5000', {
+const socket = io('https://guest-xi.vercel.app/', {
   transports: ['polling', 'websocket'],
   path: '/socket.io/',
   autoConnect: true,
