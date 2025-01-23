@@ -8,3 +8,26 @@
 .main {
     flex: 2;
 }
+
+.menuButton {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .menuButton {
+        display: flex;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        background: #1f1f1f;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+    }
+}
