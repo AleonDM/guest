@@ -10,16 +10,16 @@
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: space-between;
 }
 
 .userMessage {
     width: 80%;
     height: 100%;
-    border-radius: 20px;
+    border-radius: 10px;
     border: 1px solid #ddd;
     outline: none;
-    padding: 15px 20px;
+    padding: 15px;
     font-size: 16px;
     transition: border-color 0.2s ease;
 }
@@ -29,22 +29,18 @@
 }
 
 .sendButton {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    width: 150px;
+    background-color: green;
+    padding: 10px;
     border: none;
-    background: #1f1f1f;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    outline: none;
+    color: #eae3d2;
     cursor: pointer;
     transition: background 0.2s ease;
-    padding: 0;
 }
 
 .sendButton:hover {
-    background: #2d2d2d;
+    background-color: rgb(129, 201, 129);
 }
 
 @media (max-width: 768px) {

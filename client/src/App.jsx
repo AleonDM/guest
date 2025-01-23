@@ -1,63 +1,33 @@
-import { useState, useEffect } from 'react'
-import { io } from 'socket.io-client'
+import { Route, Routes } from 'react-router-dom'
+import io from 'socket.io-client'
 import Home from './components/home/home'
 import ChatPage from './components/chat'
 
-const socket = io('https://guest-xi.vercel.app', {
-  transports: ['websocket', 'polling'],
+const socket = io('http://localhost:5000', {
+  transports: ['polling', 'websocket'],
   path: '/socket.io/',
-  withCredentials: true,
+  autoConnect: true,
   reconnection: true,
-  reconnectionAttempts: 5,
   reconnectionDelay: 1000,
-  autoConnect: true
+  reconnectionDelayMax: 5000,
+  reconnectionAttempts: 5
 })
 
 socket.on('connect', () => {
   console.log('Connected to server')
 })
 
-socket.on('connect_error', (error) => {
-  console.error('Connection error:', error.message)
-})
-
-socket.on('disconnect', (reason) => {
-  console.log('Disconnected:', reason)
+socket.on('connect_error', () => {
+  console.log('Failed to connect to server')
 })
 
 function App() {
-  const [user, setUser] = useState(localStorage.getItem('user'))
-
-  useEffect(() => {
-    const handleConnect = () => {
-      console.log('Connected to server')
-    }
-
-    const handleDisconnect = () => {
-      console.log('Disconnected from server')
-    }
-
-    const handleError = (err) => {
-      console.log('Connection error:', err)
-      // Попробуем переподключиться через polling если websocket не работает
-      if (socket.io.opts.transports[0] === 'websocket') {
-        socket.io.opts.transports = ['polling', 'websocket']
-        socket.connect()
-      }
-    }
-
-    socket.on('connect', handleConnect)
-    socket.on('disconnect', handleDisconnect)
-    socket.on('connect_error', handleError)
-
-    return () => {
-      socket.off('connect', handleConnect)
-      socket.off('disconnect', handleDisconnect)
-      socket.off('connect_error', handleError)
-    }
-  }, [])
-
-  return user ? <ChatPage socket={socket} /> : <Home socket={socket} setUser={setUser} />
+  return (
+    <Routes>
+      <Route path='/' element={<Home socket={socket}/>} />
+      <Route path='/chat' element={<ChatPage socket={socket}/>} />
+    </Routes>
+  )
 }
 
 export default App
