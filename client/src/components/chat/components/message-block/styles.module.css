@@ -3,6 +3,7 @@
     height: 10vh;
     background: white;
     border-top: 1px solid #eee;
+    min-height: calc(100vh - 80px);
 }
 
 .form {
