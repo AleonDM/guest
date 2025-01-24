@@ -4,7 +4,6 @@
    flex: 0.2;
    padding: 20px;
    border-right: 1px solid #1f1f1d;
-   transition: transform 0.3s ease;
 }
 
 .header {
@@ -27,7 +26,6 @@
     padding: 10px;
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.05);
-    transition: background 0.2s ease;
 }
 
 .users > li:hover {
